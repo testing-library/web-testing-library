@@ -13,7 +13,7 @@
 <p>Simple and complete Web testing utilities that encourage good testing
 practices.</p>
 
-[**Read the docs**](https://testing-library.com/dom) |
+[**Read the docs**](https://testing-library.com/web) |
 [Edit the docs](https://github.com/testing-library/testing-library-docs)
 
 </div>
@@ -90,7 +90,7 @@ This module is distributed via [npm][npm] and should be installed as one of your
 project's `devDependencies`:
 
 ```
-npm install --save-dev @testing-library/dom
+npm install --save-dev @testing-library/web
 ```
 
 > [**Docs**](https://testing-library.com/docs/install)
@@ -161,11 +161,11 @@ specification. Contributions of any kind welcome!
 [build]: https://github.com/testing-library/web-testing-library/actions?query=workflow%3Avalidate
 [coverage-badge]: https://img.shields.io/codecov/c/github/testing-library/web-testing-library.svg?style=flat-square
 [coverage]: https://codecov.io/github/testing-library/web-testing-library
-[version-badge]: https://img.shields.io/npm/v/@testing-library/dom.svg?style=flat-square
-[package]: https://www.npmjs.com/package/@testing-library/dom
-[downloads-badge]: https://img.shields.io/npm/dm/@testing-library/dom.svg?style=flat-square
-[npmtrends]: http://www.npmtrends.com/@testing-library/dom
-[license-badge]: https://img.shields.io/npm/l/@testing-library/dom.svg?style=flat-square
+[version-badge]: https://img.shields.io/npm/v/@testing-library/web.svg?style=flat-square
+[package]: https://www.npmjs.com/package/@testing-library/web
+[downloads-badge]: https://img.shields.io/npm/dm/@testing-library/web.svg?style=flat-square
+[npmtrends]: http://www.npmtrends.com/@testing-library/web
+[license-badge]: https://img.shields.io/npm/l/@testing-library/web.svg?style=flat-square
 [license]: https://github.com/testing-library/web-testing-library/blob/main/LICENSE
 [prs-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
 [prs]: http://makeapullrequest.com

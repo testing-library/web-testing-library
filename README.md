@@ -1,5 +1,5 @@
 <div align="center">
-<h1>DOM Testing Library</h1>
+<h1>Web Testing Library</h1>
 
 <a href="https://www.emojione.com/emoji/1f419">
   <img
@@ -10,7 +10,7 @@
   />
 </a>
 
-<p>Simple and complete DOM testing utilities that encourage good testing
+<p>Simple and complete Web testing utilities that encourage good testing
 practices.</p>
 
 [**Read the docs**](https://testing-library.com/dom) |

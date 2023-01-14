@@ -69,7 +69,7 @@ jobs:
     needs: main
     runs-on: ubuntu-latest
     if:
-      ${{ github.repository == 'testing-library/dom-testing-library' &&
+      ${{ github.repository == 'testing-library/web-testing-library' &&
       github.event_name == 'push' }}
     steps:
       - name: 🛑 Cancel Previous Runs

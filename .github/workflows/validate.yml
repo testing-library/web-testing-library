@@ -1,0 +1,109 @@
+name: validate
+on:
+  push:
+    branches:
+      # Match SemVer major release branches
+      # e.g. "12.x" or "8.x"
+      - '[0-9]+.x'
+      - 'main'
+      - 'next'
+      - 'next-major'
+      - 'beta'
+      - 'alpha'
+      - '!all-contributors/**'
+  pull_request: {}
+
+permissions: {}
+
+jobs:
+  main:
+    permissions:
+      actions: write #  to cancel/stop running workflows (styfle/cancel-workflow-action)
+      contents: read #  to fetch code (actions/checkout)
+    # ignore all-contributors PRs
+    if: ${{ !contains(github.head_ref, 'all-contributors') }}
+    strategy:
+      # Otherwise we would not know if the problem is tied to the Node.js version
+      fail-fast: false
+      matrix:
+        node: [14, 16, 18]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+        with:
+          # required by codecov/codecov-action
+          fetch-depth: 0
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: 📥 Download deps
+        uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
+
+      # TODO: Can be removed if https://github.com/kentcdodds/kcd-scripts/pull/146 is released
+      - name: Verify format (`npm run format` committed?)
+        run: npm run format -- --check --no-write
+
+      - name: ▶️ Run validate script
+        run: npm run validate
+
+      - name: ⬆️ Upload coverage report
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
+          flags: node-${{ matrix.node }}
+
+  release:
+    permissions:
+      actions: write #  to cancel/stop running workflows (styfle/cancel-workflow-action)
+      contents: write #  to create release tags (cycjimmy/semantic-release-action)
+
+    needs: main
+    runs-on: ubuntu-latest
+    if:
+      ${{ github.repository == 'testing-library/dom-testing-library' &&
+      github.event_name == 'push' }}
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: 📥 Download deps
+        uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
+
+      - name: 🏗 Run build script
+        run: npm run build
+
+      - name: 🚀 Release
+        uses: cycjimmy/semantic-release-action@v2
+        with:
+          semantic_version: 17
+          branches: |
+            [
+              '+([0-9])?(.{+([0-9]),x}).x',
+              'main',
+              'next',
+              'next-major',
+              {name: 'beta', prerelease: true},
+              {name: 'alpha', prerelease: true}
+            ]
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

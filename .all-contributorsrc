@@ -1,0 +1,53 @@
+{
+  "projectName": "web-testing-library",
+  "projectOwner": "testing-library",
+  "repoType": "github",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributorsPerLine": 7,
+  "skipCi": false,
+  "contributors": [
+    {
+      "login": "AugustinLF",
+      "name": "Augustin Le Fèvre",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5271169?v=4",
+      "profile": "https://augustinlf.com/",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "nickmccurdy",
+      "name": "Nick McCurdy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/927220?v=4",
+      "profile": "https://nickmccurdy.com/",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "JacobMGEvans",
+      "name": "Jacob M-G Evans",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27247160?v=4",
+      "profile": "https://twitch.tv/jacobmgevans",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "eps1lon",
+      "name": "Sebastian Silbermann",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12292047?v=4",
+      "profile": "https://solverfox.dev/",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    }
+  ],
+  "repoHost": "https://github.com",
+  "commitConvention": "angular"
+}

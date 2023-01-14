@@ -7,18 +7,14 @@ const {
 
 module.exports = {
   collectCoverageFrom,
-  coveragePathIgnorePatterns: [
-    ...coveragePathIgnorePatterns,
-    '/__tests__/',
-    '/__node_tests__/',
-  ],
+  coveragePathIgnorePatterns: [...coveragePathIgnorePatterns, '/__tests__/'],
   coverageThreshold,
   watchPlugins: [
     ...watchPlugins,
     require.resolve('jest-watch-select-projects'),
   ],
   projects: [
-    require.resolve('./tests/jest.config.dom.js'),
-    require.resolve('./tests/jest.config.node.js'),
+    // No idea why I need to specify a project instead of having a single config
+    require.resolve('./tests/jest.config.js'),
   ],
 }

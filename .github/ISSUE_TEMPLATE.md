@@ -20,10 +20,10 @@ https://github.com/testing-library/testing-library-docs
 - Testing Framework and version:
   <!-- are you using jest, mocha, puppeteer, ava? And what version? -->
 - Environment:
-  <!-- 
-  If you're testing in JSDOM (the default with jest), what version? 
-  If you're testing in a browser, which one and what version? 
-  If you're testing in another runtime (e.g. Node.js, Deno, Cloudflare workers), which one and what version? 
+  <!--
+  If you're testing in JSDOM (the default with jest), what version?
+  If you're testing in a browser, which one and what version?
+  If you're testing in another runtime (e.g. Node.js, Deno, Cloudflare workers), which one and what version?
   -->
 
 <!--

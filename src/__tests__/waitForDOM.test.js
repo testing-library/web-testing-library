@@ -52,7 +52,7 @@ function waitFor(
   } = {},
 ) {
   function getElementError(message) {
-    const prettifiedDOM = prettyFormat(container)
+    const prettifiedDOM = prettyFormat.format(container)
     const error = new Error(
       [message, prettifiedDOM].filter(Boolean).join('\n\n'),
     )
@@ -126,6 +126,22 @@ function waitFor(
       return result
     }
 
+    const {MutationObserver} = getWindowFromNode(container)
+    const observer = new MutationObserver(() => {
+      const result = checkCallbackWithExpensiveErrorDiagnosticsDisabled()
+      if (typeof result?.then === 'function') {
+        result.then(resolvedValue => {
+          onDone(null, resolvedValue)
+        })
+      } else {
+        onDone(null, result)
+      }
+    })
+    observer.observe(container, mutationObserverOptions)
+    controller.signal.addEventListener('abort', () => {
+      observer.disconnect()
+    })
+
     waitForWeb(checkCallbackWithExpensiveErrorDiagnosticsDisabled, {
       clock,
       interval,
@@ -147,18 +163,77 @@ function waitFor(
         }
       },
     )
-
-    const {MutationObserver} = getWindowFromNode(container)
-    const observer = new MutationObserver(
-      checkCallbackWithExpensiveErrorDiagnosticsDisabled,
-    )
-    observer.observe(container, mutationObserverOptions)
-    controller.signal.addEventListener('abort', () => {
-      observer.disconnect()
-    })
   })
 }
 
-test('runs', async () => {
-  await expect(waitFor(() => {})).resolves.toBeUndefined()
+describe.each([
+  ['real timers', () => jest.useRealTimers()],
+  ['fake legacy timers', () => jest.useFakeTimers('legacy')],
+  ['fake modern timers', () => jest.useFakeTimers('modern')],
+])('waitFor DOM reference implementation using %s', (label, useTimers) => {
+  beforeEach(() => {
+    useTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  test('void callback', async () => {
+    await expect(waitFor(() => {})).resolves.toBeUndefined()
+  })
+
+  test('callback passes after timeout', async () => {
+    let state = 'pending'
+    setTimeout(() => {
+      state = 'done'
+    }, 10)
+
+    await expect(
+      waitFor(
+        () => {
+          if (state !== 'done') {
+            throw new Error('Not done')
+          }
+        },
+        {interval: 5},
+      ),
+    ).resolves.toBeUndefined()
+  })
+
+  test('timeout', async () => {
+    const state = 'pending'
+
+    await expect(
+      waitFor(
+        () => {
+          if (state !== 'done') {
+            throw new Error('Not done')
+          }
+        },
+        {timeout: 10},
+      ),
+    ).rejects.toThrowErrorMatchingSnapshot()
+  })
+
+  test('can resolve early due to mutations', async () => {
+    const container = document.createElement('div')
+
+    setTimeout(() => {
+      container.appendChild(document.createTextNode('Done'))
+    }, 50)
+
+    const p = waitFor(
+      () => {
+        if (container.textContent !== 'Done') {
+          throw new Error('Not done')
+        }
+        return container.textContent
+      },
+      // this would never resolve with real timers without using a MutationObserver
+      {container, interval: 200, timeout: 200},
+    )
+
+    await expect(p).resolves.toBe('Done')
+  })
 })

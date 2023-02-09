@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`waitFor DOM reference implementation using fake legacy timers timeout 1`] = `
+Not done
+
+Document {
+  "location": Location {
+    "assign": [Function assign],
+    "hash": "",
+    "host": "localhost",
+    "hostname": "localhost",
+    "href": "http://localhost/",
+    "origin": "http://localhost",
+    "pathname": "/",
+    "port": "",
+    "protocol": "http:",
+    "reload": [Function reload],
+    "replace": [Function replace],
+    "search": "",
+    "toString": [Function toString],
+  },
+}
+`;
+
+exports[`waitFor DOM reference implementation using fake modern timers timeout 1`] = `
+Not done
+
+Document {
+  "location": Location {
+    "assign": [Function assign],
+    "hash": "",
+    "host": "localhost",
+    "hostname": "localhost",
+    "href": "http://localhost/",
+    "origin": "http://localhost",
+    "pathname": "/",
+    "port": "",
+    "protocol": "http:",
+    "reload": [Function reload],
+    "replace": [Function replace],
+    "search": "",
+    "toString": [Function toString],
+  },
+}
+`;
+
+exports[`waitFor DOM reference implementation using real timers timeout 1`] = `
+Not done
+
+Document {
+  "location": Location {
+    "assign": [Function assign],
+    "hash": "",
+    "host": "localhost",
+    "hostname": "localhost",
+    "href": "http://localhost/",
+    "origin": "http://localhost",
+    "pathname": "/",
+    "port": "",
+    "protocol": "http:",
+    "reload": [Function reload],
+    "replace": [Function replace],
+    "search": "",
+    "toString": [Function toString],
+  },
+}
+`;

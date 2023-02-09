@@ -59,9 +59,14 @@ function waitForImpl<T>(
     const overallTimeoutTimer = setTimeout(handleTimeout, timeout)
     const intervalId = setInterval(checkCallback, interval)
 
-    signal?.addEventListener('abort', () => {
-      onDone(new Error(`Aborted: ${signal.reason}`), null)
-    })
+    if (signal !== undefined) {
+      if (signal.aborted) {
+        onDone(new Error(`Aborted: ${signal.reason}`), null)
+      }
+      signal.addEventListener('abort', () => {
+        onDone(new Error(`Aborted: ${signal.reason}`), null)
+      })
+    }
 
     checkCallback()
 
@@ -73,12 +78,6 @@ function waitForImpl<T>(
       // eslint-disable-next-line no-unmodified-loop-condition, @typescript-eslint/no-unnecessary-condition
       while (!finished && !signal?.aborted) {
         clock.advanceTimersByTime(interval)
-
-        // It's really important that checkCallback is run *before* we flush
-        // in-flight promises. To be honest, I'm not sure why, and I can't quite
-        // think of a way to reproduce the problem in a test, but I spent
-        // an entire day banging my head against a wall on this.
-        checkCallback()
 
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- No it isn't
         if (finished) {

@@ -143,13 +143,6 @@ function waitForImpl<T>(
       let error: Error
       if (lastError) {
         error = lastError as Error
-        // TODO: Why special casing this name `TestingLibraryElementError`?
-        if (
-          !showOriginalStackTrace &&
-          error.name === 'TestingLibraryElementError'
-        ) {
-          copyStackTrace(error, stackTraceError)
-        }
       } else {
         error = new Error('Timed out in waitFor.')
         if (!showOriginalStackTrace) {

@@ -74,6 +74,9 @@ test('ensures the given callback is a function', () => {
   )
 })
 
+const testAbortController =
+  typeof AbortController === 'undefined' ? test.skip : test
+
 describe('using fake modern timers', () => {
   beforeEach(() => {
     jest.useFakeTimers('modern')
@@ -220,7 +223,7 @@ describe('using fake modern timers', () => {
     `)
   })
 
-  test('can be aborted with an AbortSignal', async () => {
+  testAbortController('can be aborted with an AbortSignal', async () => {
     const callback = jest.fn(() => {
       throw new Error('not done')
     })
@@ -238,21 +241,24 @@ describe('using fake modern timers', () => {
     expect(callback).toHaveBeenCalledTimes(2)
   })
 
-  test('does not even ping if the signal is already aborted', async () => {
-    const callback = jest.fn(() => {
-      throw new Error('not done')
-    })
-    const controller = new AbortController()
-    controller.abort('Bailing out')
+  testAbortController(
+    'does not even ping if the signal is already aborted',
+    async () => {
+      const callback = jest.fn(() => {
+        throw new Error('not done')
+      })
+      const controller = new AbortController()
+      controller.abort('Bailing out')
 
-    const waitForError = waitFor(callback, {
-      signal: controller.signal,
-    })
+      const waitForError = waitFor(callback, {
+        signal: controller.signal,
+      })
 
-    await expect(waitForError).rejects.toThrowErrorMatchingInlineSnapshot(
-      `Aborted: Bailing out`,
-    )
-    // Just the initial check
-    expect(callback).toHaveBeenCalledTimes(1)
-  })
+      await expect(waitForError).rejects.toThrowErrorMatchingInlineSnapshot(
+        `Aborted: Bailing out`,
+      )
+      // Just the initial check
+      expect(callback).toHaveBeenCalledTimes(1)
+    },
+  )
 })

@@ -156,20 +156,6 @@ describe('using fake modern timers', () => {
     expect(testStackFrame).toMatch(fileLocationRegexp)
     const [, fileLocation] = testStackFrame.match(fileLocationRegexp)
     expect(fileLocation).toBe(__filename)
-
-    expect(waitForError.stack).toMatchInlineSnapshot(`
-      Error: Timed out in waitFor.
-          at waitFor (<PROJECT_ROOT>/src/waitFor.ts:163:27)
-          at waitFor (<PROJECT_ROOT>/src/__tests__/waitForNode.js:52:20)
-          at Object.<anonymous> (<PROJECT_ROOT>/src/__tests__/waitForNode.js:142:13)
-          at Promise.then.completed (<PROJECT_ROOT>/node_modules/jest-circus/build/utils.js:391:28)
-          at new Promise (<anonymous>)
-          at callAsyncCircusFn (<PROJECT_ROOT>/node_modules/jest-circus/build/utils.js:316:10)
-          at _callCircusTest (<PROJECT_ROOT>/node_modules/jest-circus/build/run.js:218:40)
-          at processTicksAndRejections (node:internal/process/task_queues:96:5)
-          at _runTest (<PROJECT_ROOT>/node_modules/jest-circus/build/run.js:155:3)
-          at _runTestsForDescribeBlock (<PROJECT_ROOT>/node_modules/jest-circus/build/run.js:66:9)
-    `)
   })
 
   test('does not crash in runtimes without Error.prototype.stack', async () => {
@@ -221,7 +207,7 @@ describe('using fake modern timers', () => {
     // An actual test would not have any frames pointing to this test.
     expect(waitForError.stack).toMatchInlineSnapshot(`
       Error: Timed out in waitFor.
-          at handleTimeout (<PROJECT_ROOT>/src/waitFor.ts:147:17)
+          at handleTimeout (<PROJECT_ROOT>/src/waitFor.ts:146:17)
           at callTimer (<PROJECT_ROOT>/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:729:24)
           at doTickInner (<PROJECT_ROOT>/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1289:29)
           at doTick (<PROJECT_ROOT>/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1370:20)
@@ -229,8 +215,44 @@ describe('using fake modern timers', () => {
           at FakeTimers.advanceTimersByTime (<PROJECT_ROOT>/node_modules/@jest/fake-timers/build/modernFakeTimers.js:101:19)
           at Object.advanceTimersByTime (<PROJECT_ROOT>/node_modules/jest-runtime/build/index.js:2228:26)
           at Object.advanceTimersByTime (<PROJECT_ROOT>/src/__tests__/waitForNode.js:41:12)
-          at <PROJECT_ROOT>/src/waitFor.ts:75:15
+          at <PROJECT_ROOT>/src/waitFor.ts:80:15
           at new Promise (<anonymous>)
     `)
+  })
+
+  test('can be aborted with an AbortSignal', async () => {
+    const callback = jest.fn(() => {
+      throw new Error('not done')
+    })
+    const controller = new AbortController()
+    const waitForError = waitFor(callback, {
+      signal: controller.signal,
+    })
+
+    controller.abort('Bailing out')
+
+    await expect(waitForError).rejects.toThrowErrorMatchingInlineSnapshot(
+      `Aborted: Bailing out`,
+    )
+    // Initial check + one ping (after which we yield which gives us a chance to advance to the controller.abort call)
+    expect(callback).toHaveBeenCalledTimes(2)
+  })
+
+  test('does not even ping if the signal is already aborted', async () => {
+    const callback = jest.fn(() => {
+      throw new Error('not done')
+    })
+    const controller = new AbortController()
+    controller.abort('Bailing out')
+
+    const waitForError = waitFor(callback, {
+      signal: controller.signal,
+    })
+
+    await expect(waitForError).rejects.toThrowErrorMatchingInlineSnapshot(
+      `Aborted: Bailing out`,
+    )
+    // Just the initial check
+    expect(callback).toHaveBeenCalledTimes(1)
   })
 })

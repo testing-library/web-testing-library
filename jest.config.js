@@ -8,7 +8,17 @@ const {
 module.exports = {
   collectCoverageFrom,
   coveragePathIgnorePatterns: [...coveragePathIgnorePatterns, '/__tests__/'],
-  coverageThreshold,
+  coverageThreshold: {
+    ...coverageThreshold,
+    // full coverage across the build matrix (Node.js versions) but not in a single job
+    // minimum coverage of jobs using different Node.js version
+    './src/waitFor.ts': {
+      branches: 96.77,
+      functions: 100,
+      lines: 97.95,
+      statements: 98,
+    },
+  },
   watchPlugins: [
     ...watchPlugins,
     require.resolve('jest-watch-select-projects'),

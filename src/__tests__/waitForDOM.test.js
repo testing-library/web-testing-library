@@ -65,6 +65,11 @@ function waitFor(
     return error
   }
 
+  /**
+   * @template T
+   * @param {() => T} cb 
+   * @returns T
+   */
   function advanceTimersWrapper(cb) {
     // /dom config. /react uses act() here
     return cb()
@@ -78,16 +83,8 @@ function waitFor(
   /** @type {import('../').FakeClock} */
   const jestFakeClock = {
     advanceTimersByTime: timeoutMS => {
-      advanceTimersWrapper(() => {
-        jest.advanceTimersByTime(timeoutMS)
-      })
-    },
-    flushPromises: () => {
       return advanceTimersWrapper(async () => {
-        await new Promise(r => {
-          setTimeout(r, 0)
-          jest.advanceTimersByTime(0)
-        })
+        jest.advanceTimersByTime(timeoutMS)
       })
     },
   }

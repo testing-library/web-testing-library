@@ -37,14 +37,8 @@ function jestFakeTimersAreEnabled() {
 function waitFor(callback, options) {
   /** @type {import('../').FakeClock} */
   const jestFakeClock = {
-    advanceTimersByTime: timeoutMS => {
+    advanceTimersByTime: async timeoutMS => {
       jest.advanceTimersByTime(timeoutMS)
-    },
-    flushPromises: () => {
-      return new Promise(r => {
-        setTimeout(r, 0)
-        jest.advanceTimersByTime(0)
-      })
     },
   }
   const clock = jestFakeTimersAreEnabled() ? jestFakeClock : undefined
@@ -210,15 +204,15 @@ describe('using fake modern timers', () => {
     // An actual test would not have any frames pointing to this test.
     expect(waitForError.stack).toMatchInlineSnapshot(`
       Error: Timed out in waitFor.
-          at handleTimeout (<PROJECT_ROOT>/src/waitFor.ts:146:17)
+          at handleTimeout (<PROJECT_ROOT>/src/waitFor.ts:139:17)
           at callTimer (<PROJECT_ROOT>/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:729:24)
           at doTickInner (<PROJECT_ROOT>/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1289:29)
           at doTick (<PROJECT_ROOT>/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1370:20)
           at Object.tick (<PROJECT_ROOT>/node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1378:20)
           at FakeTimers.advanceTimersByTime (<PROJECT_ROOT>/node_modules/@jest/fake-timers/build/modernFakeTimers.js:101:19)
           at Object.advanceTimersByTime (<PROJECT_ROOT>/node_modules/jest-runtime/build/index.js:2228:26)
-          at Object.advanceTimersByTime (<PROJECT_ROOT>/src/__tests__/waitForNode.js:41:12)
-          at <PROJECT_ROOT>/src/waitFor.ts:80:15
+          at Object.advanceTimersByTime (<PROJECT_ROOT>/src/__tests__/waitForNode.test.js:41:12)
+          at <PROJECT_ROOT>/src/waitFor.ts:85:21
           at new Promise (<anonymous>)
     `)
   })

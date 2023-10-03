@@ -176,14 +176,8 @@ test('does not work after it resolves', async () => {
 
 /** @type {import('../').FakeClock} */
 const jestFakeClock = {
-  advanceTimersByTime: timeoutMS => {
+  advanceTimersByTime: async timeoutMS => {
     jest.advanceTimersByTime(timeoutMS)
-  },
-  flushPromises: () => {
-    return new Promise(r => {
-      setTimeout(r, 0)
-      jest.advanceTimersByTime(0)
-    })
   },
 }
 describe.each([

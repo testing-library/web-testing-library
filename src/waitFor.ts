@@ -7,7 +7,7 @@ function copyStackTrace(target: Error, source: Error) {
 }
 
 export interface FakeClock {
-  advanceTimersByTime: (timeoutMS: number) => void
+  advanceTimersByTime: (timeoutMS: number) => Promise<void>
   flushPromises: () => Promise<void>
 }
 
@@ -77,19 +77,12 @@ function waitForImpl<T>(
       // waiting or when we've timed out.
       // eslint-disable-next-line no-unmodified-loop-condition, @typescript-eslint/no-unnecessary-condition
       while (!finished && !signal?.aborted) {
-        clock.advanceTimersByTime(interval)
-
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- No it isn't
-        if (finished) {
-          break
-        }
-
         // In this rare case, we *need* to wait for in-flight promises
         // to resolve before continuing. We don't need to take advantage
         // of parallelization so we're fine.
         // https://stackoverflow.com/a/59243586/971592
         // eslint-disable-next-line no-await-in-loop
-        await clock.flushPromises()
+        await clock.advanceTimersByTime(interval)
       }
     }
 

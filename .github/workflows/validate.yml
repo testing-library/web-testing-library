@@ -11,14 +11,17 @@ on:
       - 'beta'
       - 'alpha'
       - '!all-contributors/**'
-  pull_request: {}
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions: {}
 
 jobs:
   main:
     permissions:
-      actions: write #  to cancel/stop running workflows (styfle/cancel-workflow-action)
       contents: read #  to fetch code (actions/checkout)
     # ignore all-contributors PRs
     if: ${{ !contains(github.head_ref, 'all-contributors') }}
@@ -26,12 +29,9 @@ jobs:
       # Otherwise we would not know if the problem is tied to the Node.js version
       fail-fast: false
       matrix:
-        node: [14, 16, 18]
+        node: [14, 16, 18, 20]
     runs-on: ubuntu-latest
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
         with:
@@ -42,6 +42,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+
+      # Ideally done by actions/setup-node: https://github.com/actions/setup-node/issues/213
+      - name: Setup package manager
+        run: npm install -g npm@9.2.0
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
@@ -63,8 +67,8 @@ jobs:
 
   release:
     permissions:
-      actions: write #  to cancel/stop running workflows (styfle/cancel-workflow-action)
       contents: write #  to create release tags (cycjimmy/semantic-release-action)
+      issues: write # to post release that resolves an issue
 
     needs: main
     runs-on: ubuntu-latest
@@ -72,9 +76,6 @@ jobs:
       ${{ github.repository == 'testing-library/web-testing-library' &&
       github.event_name == 'push' }}
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
@@ -82,6 +83,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
+
+      # Ideally done by actions/setup-node: https://github.com/actions/setup-node/issues/213
+      - name: Setup package manager
+        run: npm install -g npm@9.2.0
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1

@@ -67,7 +67,7 @@ function waitFor(
 
   /**
    * @template T
-   * @param {() => T} cb 
+   * @param {() => T} cb
    * @returns T
    */
   function advanceTimersWrapper(cb) {
